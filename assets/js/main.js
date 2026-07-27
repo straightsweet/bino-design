@@ -27,6 +27,14 @@ function setupFaq() {
       button.setAttribute("aria-expanded", String(willOpen));
       answer.hidden = !willOpen;
       icon.textContent = willOpen ? "−" : "＋";
+
+        if (willOpen) {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "faq_open",
+            content_id: answerId
+          });
+        }
     });
   });
 }
