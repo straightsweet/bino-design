@@ -28,13 +28,13 @@ function setupFaq() {
       answer.hidden = !willOpen;
       icon.textContent = willOpen ? "−" : "＋";
 
-        if (willOpen) {
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({
-            event: "faq_open",
-            content_id: answerId
-          });
-        }
+      if (willOpen) {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "faq_open",
+          content_id: answerId,
+        });
+      }
     });
   });
 }
@@ -62,7 +62,7 @@ function setupContactForm() {
     window.dataLayer.push({
       event: "contact_form_submit",
       form_name: "contact",
-      form_location: "contact"
+      form_location: "contact",
     });
   });
 }
@@ -82,8 +82,37 @@ function setupMeasurementHooks() {
         event: "cta_click",
         cta_name: element.dataset.ctaName || "",
         cta_location: element.dataset.ctaLocation || "",
-        cta_type: element.dataset.ctaType || ""
+        cta_type: element.dataset.ctaType || "",
       });
     });
+  });
+  // セクションが画面内に入ったら section_view を送信
+  const trackedSections = document.querySelectorAll("[data-track-section]");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        const section = entry.target;
+
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "section_view",
+          section_name: section.dataset.trackSection || "",
+          section_order: section.dataset.sectionOrder || "",
+        });
+
+        // 同じセクションを何度も送らない
+        observer.unobserve(section);
+      });
+    },
+    {
+      threshold: 0.5,
+    },
+  );
+
+  trackedSections.forEach((section) => {
+    observer.observe(section);
   });
 }
